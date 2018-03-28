@@ -40,10 +40,14 @@ namespace SHSchool.CourseSelection_Tool
             //DataTable dt = qh.Select(SQL);
             //stuCountLb.Text = "" + dt.Rows[0]["count"] + " 位學生";
 
-            // Init CourseTypeCbx
+        }
 
-            QueryHelper qh2 = new QueryHelper();
-            string sql = string.Format(@"
+        private void ReloadCourseTypeCbx()
+        {
+            if (schoolYearCbx.Text != "" && semesterCbx.Text != "")
+            {
+                QueryHelper qh2 = new QueryHelper();
+                string sql = string.Format(@"
 SELECT DISTINCT 
 type
 FROM
@@ -54,12 +58,16 @@ school_year = {0}
 AND semester = {1}
         ", schoolYearCbx.Text, semesterCbx.Text);
 
-            DataTable dt2 = qh2.Select(sql);
-            foreach (DataRow row in dt2.Rows)
-            {
-                courseTypeCbx.Items.Add("" + row["type"]);
+                DataTable dt2 = qh2.Select(sql);
+                foreach (DataRow row in dt2.Rows)
+                {
+                    courseTypeCbx.Items.Add("" + row["type"]);
+                }
+                if (courseTypeCbx.Items.Count > 0)
+                {
+                    courseTypeCbx.SelectedIndex = 0;
+                }
             }
-            courseTypeCbx.SelectedIndex = 0;
         }
 
         private void ReloadStuCountLb()
@@ -125,6 +133,7 @@ WHERE
 
         private void schoolYearCbx_TextChanged(object sender, EventArgs e)
         {
+            ReloadCourseTypeCbx();
             ReloadSubCountLb();
             ReloadStuCountLb();
             sy = schoolYearCbx.Text;
@@ -132,6 +141,7 @@ WHERE
 
         private void semesterCbx_TextChanged(object sender, EventArgs e)
         {
+            ReloadCourseTypeCbx();
             ReloadSubCountLb();
             ReloadStuCountLb();
             s = semesterCbx.Text;
