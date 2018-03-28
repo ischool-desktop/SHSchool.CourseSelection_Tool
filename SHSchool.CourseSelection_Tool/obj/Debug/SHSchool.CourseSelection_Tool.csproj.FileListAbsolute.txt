@@ -1,0 +1,4 @@
+D:\Users\小金\Documents\github_ischool\SHSchool.CourseSelection_Tool\SHSchool.CourseSelection_Tool\obj\Debug\SHSchool.CourseSelection_Tool.csprojResolveAssemblyReference.cache
+D:\Users\小金\Documents\github_ischool\SHSchool.CourseSelection_Tool\SHSchool.CourseSelection_Tool\obj\Debug\SHSchool.CourseSelection_Tool.Properties.Resources.resources
+D:\Users\小金\Documents\github_ischool\SHSchool.CourseSelection_Tool\SHSchool.CourseSelection_Tool\obj\Debug\SHSchool.CourseSelection_Tool.csproj.GenerateResource.Cache
+D:\Users\小金\Documents\github_ischool\SHSchool.CourseSelection_Tool\SHSchool.CourseSelection_Tool\obj\Debug\SHSchool.CourseSelection_Tool.csproj.CoreCompileInputs.cache
