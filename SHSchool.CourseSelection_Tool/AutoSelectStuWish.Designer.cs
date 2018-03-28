@@ -202,6 +202,7 @@
             this.courseTypeCbx.Size = new System.Drawing.Size(115, 25);
             this.courseTypeCbx.Style = DevComponents.DotNetBar.eDotNetBarStyle.StyleManagerControlled;
             this.courseTypeCbx.TabIndex = 12;
+            this.courseTypeCbx.SelectedIndexChanged += new System.EventHandler(this.courseTypeCbx_SelectedIndexChanged);
             // 
             // AutoSelectStuWish
             // 

@@ -11,10 +11,11 @@ using FISCA.Data;
 using SHSchool.CourseSelection.UDT;
 using K12.Data;
 using System.IO;
+using FISCA.Presentation.Controls;
 
 namespace SHSchool.CourseSelection_Tool
 {
-    public partial class AutoSelectStuWish : Form
+    public partial class AutoSelectStuWish : BaseForm
     {
         List<SSWish> wishList = new List<SSWish>();
         string sy, s;
@@ -34,10 +35,10 @@ namespace SHSchool.CourseSelection_Tool
             semesterCbx.Items.Add(2);
             semesterCbx.SelectedIndex = 0;
             // Init Label
-            QueryHelper qh = new QueryHelper();
-            string SQL = "SELECT count(*) FROM student WHERE status = 1";
-            DataTable dt = qh.Select(SQL);
-            stuCountLb.Text = "" + dt.Rows[0]["count"] + " 位學生";
+            //QueryHelper qh = new QueryHelper();
+            //string SQL = "SELECT count(*) FROM student WHERE status = 1";
+            //DataTable dt = qh.Select(SQL);
+            //stuCountLb.Text = "" + dt.Rows[0]["count"] + " 位學生";
 
             // Init CourseTypeCbx
 
@@ -58,18 +59,61 @@ AND semester = {1}
             {
                 courseTypeCbx.Items.Add("" + row["type"]);
             }
+            courseTypeCbx.SelectedIndex = 0;
+        }
 
+        private void ReloadStuCountLb()
+        {
+            if (schoolYearCbx.Text != string.Empty && semesterCbx.Text != string.Empty && courseTypeCbx.Text != "")
+            {
+                string sql = string.Format(@"
+SELECT
+	count(id)
+FROM
+	student
+	LEFT OUTER JOIN(
+		SELECT DISTINCT 
+			ref_class_id 
+		FROM	
+			$ischool.course_selection.subject_class_selection AS scs
+			LEFT OUTER JOIN(
+				SELECT 
+					*
+				FROM
+					$ischool.course_selection.subject
+				WHERE
+					school_year = {0}
+					AND semester = {1}
+					AND type = '{2}'
+			) subject ON subject.uid =  scs.ref_subject_id 
+		WHERE subject.uid IS NOT NULL
+	) scs ON scs.ref_class_id = student.ref_class_id
+WHERE
+	student.status in (1,2)
+	AND scs.ref_class_id IS NOT NULL
+                ", schoolYearCbx.Text, semesterCbx.Text, courseTypeCbx.Text);
+
+                QueryHelper qh = new QueryHelper();
+                DataTable dt = qh.Select(sql);
+
+                stuCountLb.Text = "" + dt.Rows[0][0];
+            }
+            
         }
 
         private void ReloadSubCountLb()
         {
-            if (schoolYearCbx.Text != string.Empty && semesterCbx.Text != string.Empty)
+            if (schoolYearCbx.Text != string.Empty && semesterCbx.Text != string.Empty && courseTypeCbx.Text != "")
             {
                 string SQL = string.Format(@"
                     SELECT count(*) 
                     FROM $ischool.course_selection.subject 
-                    WHERE school_year = {0} AND semester = {1}"
-                    , schoolYearCbx.Text, semesterCbx.Text);
+                    WHERE 
+                        school_year = {0} 
+                        AND semester = {1}
+                        AND type = '{2}'
+                    ", schoolYearCbx.Text, semesterCbx.Text,courseTypeCbx.Text);
+
                 QueryHelper qh = new QueryHelper();
                 DataTable dt = qh.Select(SQL);
 
@@ -82,13 +126,21 @@ AND semester = {1}
         private void schoolYearCbx_TextChanged(object sender, EventArgs e)
         {
             ReloadSubCountLb();
+            ReloadStuCountLb();
             sy = schoolYearCbx.Text;
         }
 
         private void semesterCbx_TextChanged(object sender, EventArgs e)
         {
             ReloadSubCountLb();
+            ReloadStuCountLb();
             s = semesterCbx.Text;
+        }
+
+        private void courseTypeCbx_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            ReloadStuCountLb();
+            ReloadSubCountLb();
         }
 
         BackgroundWorker bgw = new BackgroundWorker() { WorkerReportsProgress = true };
